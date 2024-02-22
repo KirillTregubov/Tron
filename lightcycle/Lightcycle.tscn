@@ -2,12 +2,12 @@
 
 [ext_resource type="Script" path="res://lightcycle/CharacterCycle.gd" id="1_y3wxq"]
 
-[sub_resource type="Gradient" id="Gradient_ugf0i"]
+[sub_resource type="Gradient" id="Gradient_y6gx6"]
 offsets = PackedFloat32Array(0.525974, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0.490196, 1, 1, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_otkrs"]
-gradient = SubResource("Gradient_ugf0i")
+gradient = SubResource("Gradient_y6gx6")
 width = 8
 height = 20
 fill_from = Vector2(1, 1)
@@ -23,7 +23,11 @@ motion_mode = 1
 script = ExtResource("1_y3wxq")
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+position = Vector2(2, 0)
+scale = Vector2(1.5, 1)
 texture = SubResource("GradientTexture2D_otkrs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 shape = SubResource("CapsuleShape2D_db7o8")
+
+[node name="Trails" type="Node2D" parent="."]
