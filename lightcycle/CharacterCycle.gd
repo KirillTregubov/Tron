@@ -6,7 +6,7 @@ enum Direction {up, down, left, right}
 const SPEED = 250.0
 const JUMP_VELOCITY = -400.0
 
-var move_state = State.moving # State.idle
+var move_state = State.idle # State.idle
 var move_direction = Direction.down
 @onready var player = $Sprite2D as Sprite2D
 @onready var trails = $"../Trails"
@@ -80,6 +80,13 @@ func calculate_direction():
 
 func _physics_process(delta: float) -> void:
 	if move_state != State.moving:
+		if Input.is_action_just_pressed("ui_accept"):
+			move_state = State.moving
+			set_velocity(directional_velocity(move_direction))
+			set_rotation_degrees(directional_rotation(move_direction))
+		return
+	elif Input.is_action_just_pressed("ui_accept"):
+		move_state = State.idle
 		return
 	
 	print('deltas ', delta, velocity, delta * velocity)
@@ -114,7 +121,6 @@ func _physics_process(delta: float) -> void:
 		newTrail.set_scale(scaleVec)
 		print('spawned at ', newTrail.global_position, newTrail.scale)
 		#newTrail.set_
-		num += 1
 		#get_tree().paused = true
 		
 		#else:
@@ -124,12 +130,19 @@ func _physics_process(delta: float) -> void:
 		#pass
 	
 	var new_direction = calculate_direction()
+	#if (num > 0):
+		#new_direction = Direction.right
+		#get_tree().paused = true
+		#move_and_slide()
+		#return
 	if new_direction != move_direction and new_direction is int:
 		print('current', Direction.keys()[move_direction])
 		print('new', Direction.keys()[new_direction])
 		
-		set_velocity(directional_velocity(new_direction))
+		#set_velocity(directional_velocity(new_direction))
+		set_velocity(Vector2(0,0))
 		set_rotation_degrees(directional_rotation(new_direction))
+		position.y += -2
 		
 		move_direction = new_direction
 		get_tree().paused = true
@@ -137,3 +150,4 @@ func _physics_process(delta: float) -> void:
 	print('move')
 	move_and_slide()
 	print('end ', global_position)
+	num += 1
