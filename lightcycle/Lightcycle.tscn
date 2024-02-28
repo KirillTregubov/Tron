@@ -23,6 +23,7 @@ motion_mode = 1
 script = ExtResource("1_y3wxq")
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+position = Vector2(1.78814e-07, 0)
 scale = Vector2(1.5, 1)
 texture = SubResource("GradientTexture2D_otkrs")
 
