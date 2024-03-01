@@ -8,3 +8,9 @@
 [node name="Grid" parent="." instance=ExtResource("1_57gqt")]
 
 [node name="Lightcycle" parent="." instance=ExtResource("2_hfddi")]
+START_POSITION_Y = 300.0
+START_DIRECTION = 3
+
+[node name="Lightcycle2" parent="." instance=ExtResource("2_hfddi")]
+START_POSITION_Y = 360.0
+START_DIRECTION = 2

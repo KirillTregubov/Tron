@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://cbw2m8i81pntg"]
+[gd_scene load_steps=6 format=3 uid="uid://cbw2m8i81pntg"]
 
+[ext_resource type="Script" path="res://lightcycle/Lightcycle.gd" id="1_r0fxd"]
 [ext_resource type="Script" path="res://lightcycle/CharacterCycle.gd" id="1_y3wxq"]
 
 [sub_resource type="Gradient" id="Gradient_y6gx6"]
@@ -17,6 +18,7 @@ radius = 4.0
 height = 20.0
 
 [node name="Lightcycle" type="Node2D"]
+script = ExtResource("1_r0fxd")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 motion_mode = 1
@@ -24,7 +26,6 @@ script = ExtResource("1_y3wxq")
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
 position = Vector2(1.78814e-07, 0)
-scale = Vector2(1.5, 1)
 texture = SubResource("GradientTexture2D_otkrs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
