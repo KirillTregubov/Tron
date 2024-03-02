@@ -64,19 +64,37 @@ func directional_rotation(direction: Constants.Direction) -> float:
 
 func directional_position(direction: Constants.Direction) -> Vector2:
 	var cur_pos: Vector2 = self.position
+	var middle = (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
+	var change = TRAIL_DIMENSION - middle
 	match direction:
 		Constants.Direction.up:
-			cur_pos.y -= (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
+			if move_direction == Constants.Direction.left:
+				cur_pos.x -= change
+			else:
+				cur_pos.x += change
+			cur_pos.y -= middle
 		Constants.Direction.down:
-			cur_pos.y += (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
+			if move_direction == Constants.Direction.left:
+				cur_pos.x -= change
+			else:
+				cur_pos.x += change
+			cur_pos.y += middle
 		Constants.Direction.left:
-			cur_pos.x -= (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
+			if move_direction == Constants.Direction.up:
+				cur_pos.y -= change
+			else:
+				cur_pos.y += change
+			cur_pos.x -= middle
 		Constants.Direction.right:
 			# align to old top
 			#cur_pos.y -= sprite.get_rect().size.y / 2 - sprite.get_rect().size.x / 2
 			# align to old bottom
 			#cur_pos.y += (sprite.get_rect().size.y - sprite.get_rect().size.x)/ 2
-			cur_pos.x += (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
+			if move_direction == Constants.Direction.up:
+				cur_pos.y -= change
+			else:
+				cur_pos.y += change
+			cur_pos.x += middle
 		_:
 			printerr("Invalid direction")
 			get_tree().quit()
@@ -164,12 +182,10 @@ func _physics_process(delta: float) -> void:
 	
 	# Move and snap position
 	var temp = move_and_collide(delta * velocity)
-	#print(temp.get_collider())
-	if temp:
-		print(temp.get_collider().get_collision_mask())
-		if (temp.get_collider().get_collision_mask()):
+	
+	if temp and temp.has_method('get_collider'):
+		print(temp.get_collider())
+		if (temp.get_collider()):
 			print('foreign')
 			crash()
-	#move_and_slide()
-	#get_tree().paused = true
 	global_position = Vector2(round(global_position.x), round(global_position.y))
