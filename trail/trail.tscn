@@ -6,16 +6,17 @@ colors = PackedColorArray(1, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_3ac3h"]
 gradient = SubResource("Gradient_ugf0i")
-width = 8
-height = 8
+width = 4
+height = 4
 fill_from = Vector2(1, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fth3n"]
-size = Vector2(8, 8)
+size = Vector2(4, 4)
 
 [node name="Trail" type="Node2D"]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_layer = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
 texture = SubResource("GradientTexture2D_3ac3h")
