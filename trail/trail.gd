@@ -1,10 +1,6 @@
 extends Node2D
 
-@export var START_POSITION_X = 640.0
-@export var START_POSITION_Y = 500.0 #200
-@export var START_DIRECTION: Constants.Direction = Constants.Direction.up
-@export var PLAYER: Constants.Player = Constants.Player.one
-
+@onready var collisionShape = $StaticBody2D/CollisionShape2D as CollisionShape2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

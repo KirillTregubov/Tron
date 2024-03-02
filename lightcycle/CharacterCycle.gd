@@ -2,13 +2,14 @@ extends CharacterBody2D
 
 enum State {idle, moving}
 
+var player: Constants.Player
 var move_state = State.idle
 var move_direction: Constants.Direction
 const TRAIL_DIMENSION = 8
 const SPEED = 250.0
-@onready var player = $Sprite2D as Sprite2D
-@onready var trails = $"../Trails"
-var trail = preload("res://trail/trail.tscn")
+@onready var sprite = $Sprite2D as Sprite2D
+@onready var trails = $"../Trails" as Node2D
+var trail = preload ("res://trail/trail.tscn")
 
 
 func calculate_direction() -> Constants.Direction:
@@ -42,7 +43,7 @@ func directional_velocity(direction: Constants.Direction) -> Vector2:
 		_:
 			printerr("Invalid direction")
 			get_tree().quit()
-			return Vector2(0,0)
+			return Vector2(0, 0)
 
 
 func directional_rotation(direction: Constants.Direction) -> float:
@@ -65,24 +66,24 @@ func directional_position(direction: Constants.Direction) -> Vector2:
 	var cur_pos: Vector2 = self.position
 	match direction:
 		Constants.Direction.up:
-			cur_pos.y -= (player.get_rect().size.y - player.get_rect().size.x)/ 2
+			cur_pos.y -= (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
 		Constants.Direction.down:
-			cur_pos.y += (player.get_rect().size.y - player.get_rect().size.x)/ 2
+			cur_pos.y += (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
 		Constants.Direction.left:
-			cur_pos.x -= (player.get_rect().size.y - player.get_rect().size.x)/ 2
+			cur_pos.x -= (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
 		Constants.Direction.right:
 			# align to old top
-			#cur_pos.y -= player.get_rect().size.y / 2 - player.get_rect().size.x / 2
+			#cur_pos.y -= sprite.get_rect().size.y / 2 - sprite.get_rect().size.x / 2
 			# align to old bottom
-			#cur_pos.y += (player.get_rect().size.y - player.get_rect().size.x)/ 2
-			cur_pos.x += (player.get_rect().size.y - player.get_rect().size.x)/ 2
+			#cur_pos.y += (sprite.get_rect().size.y - sprite.get_rect().size.x)/ 2
+			cur_pos.x += (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
 		_:
 			printerr("Invalid direction")
 			get_tree().quit()
 	return cur_pos
 
 
-func spawn_trail(change: Vector2, padding = Vector2(0, 0), rotate = false):
+func spawn_trail(change: Vector2, padding=Vector2(0, 0), apply_rotation=false):
 	# Calculate scale
 	var scaleVec = change.abs() / Vector2(TRAIL_DIMENSION, TRAIL_DIMENSION)
 	scaleVec.x = 1 if scaleVec.x == 0 else scaleVec.x
@@ -92,24 +93,29 @@ func spawn_trail(change: Vector2, padding = Vector2(0, 0), rotate = false):
 	var offset: Vector2
 	match move_direction:
 		Constants.Direction.up:
-			offset = Vector2(0, TRAIL_DIMENSION/2)
+			offset = Vector2(0, TRAIL_DIMENSION / 2)
 		Constants.Direction.down:
-			offset = Vector2(0, -TRAIL_DIMENSION/2)
+			offset = Vector2(0, -TRAIL_DIMENSION / 2)
 		Constants.Direction.left:
-			offset = Vector2(TRAIL_DIMENSION/2, 0)
+			offset = Vector2(TRAIL_DIMENSION / 2, 0)
 		Constants.Direction.right:
-			offset = Vector2(-TRAIL_DIMENSION/2, 0)
+			offset = Vector2(-TRAIL_DIMENSION / 2, 0)
 		_:
-			offset = Vector2(0,0)
+			offset = Vector2(0, 0)
 	
 	# Create trail
 	var newTrail = trail.instantiate() as Node2D
 	trails.add_child(newTrail)
 	newTrail.set_global_position(global_position - change + offset + padding)
 	newTrail.set_scale(scaleVec)
-	if rotate:
+	if apply_rotation:
 		newTrail.set_rotation_degrees(90)
+
+
+func crash() -> void:
+	print('crashed')
 	#get_tree().paused = true
+	get_parent().queue_free()
 
 
 func _ready() -> void:
@@ -136,7 +142,7 @@ func _physics_process(delta: float) -> void:
 	# Change direction
 	var direction = calculate_direction()
 	if direction != move_direction and direction is int:
-		var new_direction : Constants.Direction = direction
+		var new_direction: Constants.Direction = direction
 		if new_direction == Constants.Direction.left or new_direction == Constants.Direction.right:
 			if move_direction == Constants.Direction.up:
 				spawn_trail(Vector2(0, -6), Vector2(0, -3))
@@ -157,5 +163,13 @@ func _physics_process(delta: float) -> void:
 	spawn_trail(delta * velocity)
 	
 	# Move and snap position
-	move_and_slide()
+	var temp = move_and_collide(delta * velocity)
+	#print(temp.get_collider())
+	if temp:
+		print(temp.get_collider().get_collision_mask())
+		if (temp.get_collider().get_collision_mask()):
+			print('foreign')
+			crash()
+	#move_and_slide()
+	#get_tree().paused = true
 	global_position = Vector2(round(global_position.x), round(global_position.y))

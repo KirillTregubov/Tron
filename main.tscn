@@ -8,3 +8,4 @@
 [node name="Grid" parent="." instance=ExtResource("1_57gqt")]
 
 [node name="Lightcycle" parent="." instance=ExtResource("2_hfddi")]
+START_POSITION_X = 200.0
