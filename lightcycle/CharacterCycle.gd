@@ -18,19 +18,14 @@ func calculate_direction() -> Constants.Direction:
 	var left = Input.is_action_pressed("ui_left")
 	var right = Input.is_action_pressed("ui_right")
 	
-	print('stats ', up, down, left, right)
-	
-	#and move_direction != Constants.Direction.up
-	if up and move_direction != Constants.Direction.down:
+	# TODO: prevent diagonal spam
+	if up and move_direction != Constants.Direction.up and move_direction != Constants.Direction.down:
 		if not down: return Constants.Direction.up
-	#and move_direction != Constants.Direction.down
-	if down and move_direction != Constants.Direction.up:
+	if down and move_direction != Constants.Direction.down and move_direction != Constants.Direction.up:
 		if not up: return Constants.Direction.down
-	#and move_direction != Constants.Direction.left
-	if left and move_direction != Constants.Direction.right:
+	if left and move_direction != Constants.Direction.left and move_direction != Constants.Direction.right:
 		if not right: return Constants.Direction.left
-	#and move_direction != Constants.Direction.right
-	if right and move_direction != Constants.Direction.left:
+	if right and move_direction != Constants.Direction.right and move_direction != Constants.Direction.left:
 		if not left: return Constants.Direction.right
 	
 	return move_direction
