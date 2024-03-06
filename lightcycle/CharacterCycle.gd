@@ -13,24 +13,90 @@ const SPEED = 250.0
 @onready var trails = $"../Trails" as Node2D
 var trail = preload ("res://trail/trail.tscn")
 
-var min_move_amount = 6
+const MIN_MOVE_AMOUNT = 3
+const MAX_TICK_DURATION = 200 # 200ms
+var move_queue = []
+
+
+func _process(_delta):
+	var current_tick = Time.get_ticks_msec()
+
+	# Iterate through the move_queue array backwards to remove expired elements
+	#for item in move_queue.filter(func(x): return x.tick > current_tick + MAX_TICK_DURATION)
+	for i in range(move_queue.size() - 1, -1, -1):
+		var move_event = move_queue[i]
+		if current_tick - move_event.tick < MAX_TICK_DURATION:
+			return
+		else:
+			move_queue.remove_at(i)
+
+
+func _input(event: InputEvent) -> void:
+	var tick = Time.get_ticks_msec()
+	if event.is_action_pressed("ui_up") and move_direction != Constants.Direction.up:
+		move_queue.append({"direction": Constants.Direction.up, "tick": tick})
+	elif event.is_action_pressed("ui_down") and move_direction != Constants.Direction.down:
+		move_queue.append({"direction": Constants.Direction.down, "tick": tick})
+	elif event.is_action_pressed("ui_left") and move_direction != Constants.Direction.left:
+		move_queue.append({"direction": Constants.Direction.left, "tick": tick})
+	elif event.is_action_pressed("ui_right") and move_direction != Constants.Direction.right:
+		move_queue.append({"direction": Constants.Direction.right, "tick": tick})
+	# if event.is_action_pressed("ui_up") and move_direction != Constants.Direction.up:
+	# 	move_queue.append(Constants.Direction.up)
+	# elif event.is_action_pressed("ui_down") and move_direction != Constants.Direction.down:
+	# 	move_queue.append(Constants.Direction.down)
+	# elif event.is_action_pressed("ui_left") and move_direction != Constants.Direction.left:
+	# 	move_queue.append(Constants.Direction.left)
+	# elif event.is_action_pressed("ui_right") and move_direction != Constants.Direction.right:
+	# 	move_queue.append(Constants.Direction.right)
+
 
 func calculate_direction() -> Constants.Direction:
 	var up = Input.is_action_pressed("ui_up")
 	var down = Input.is_action_pressed("ui_down")
 	var left = Input.is_action_pressed("ui_left")
 	var right = Input.is_action_pressed("ui_right")
+	#print('up ', up, ' down ', down, ' left ', left, ' right ', right)
 	
-	if up and move_direction != Constants.Direction.up and move_direction != Constants.Direction.down and (old_move_direction == null or move_amount > min_move_amount or old_move_direction != Constants.Direction.up):
-		if not down: return Constants.Direction.up
-	if down and move_direction != Constants.Direction.down and move_direction != Constants.Direction.up and (old_move_direction == null or move_amount > min_move_amount  or old_move_direction != Constants.Direction.down):
-		if not up: return Constants.Direction.down
-	if left and move_direction != Constants.Direction.left and move_direction != Constants.Direction.right and (old_move_direction == null or move_amount > min_move_amount  or old_move_direction != Constants.Direction.left):
-		if not right: return Constants.Direction.left
-	if right and move_direction != Constants.Direction.right and move_direction != Constants.Direction.left and (old_move_direction == null or move_amount > min_move_amount  or old_move_direction != Constants.Direction.right):
-		if not left: return Constants.Direction.right
+	var opposite: Constants.Direction
+	match move_direction:
+		Constants.Direction.up:
+			opposite = Constants.Direction.down
+		Constants.Direction.down:
+			opposite = Constants.Direction.up
+		Constants.Direction.left:
+			opposite = Constants.Direction.right
+		Constants.Direction.right:
+			opposite = Constants.Direction.left
+		_:
+			printerr("Invalid move_direction in calculate_direction()")
+			get_tree().quit()
+			return move_direction
 	
-	return move_direction
+	#print('old ', old_move_direction, ' cur ', move_direction, ' amt ', move_amount)	
+	var current_move = move_queue.filter(func(x): return x.direction != opposite and (old_move_direction == null or old_move_direction != x.direction or move_amount > MIN_MOVE_AMOUNT)).pop_front()
+	if current_move == null:
+		return move_direction
+	
+	#print('here', move_queue, ' current ', current_move)
+	move_queue.pop_at(move_queue.find(current_move.direction))
+	#print('after ', move_queue)
+	
+	return current_move.direction
+	#return move_direction
+	
+	#
+	#
+	#if up and move_direction != Constants.Direction.up and move_direction != Constants.Direction.down and (old_move_direction == null or move_amount > MIN_MOVE_AMOUNT or old_move_direction != Constants.Direction.up):
+		#if not down: return Constants.Direction.up
+	#if down and move_direction != Constants.Direction.down and move_direction != Constants.Direction.up and (old_move_direction == null or move_amount > MIN_MOVE_AMOUNT  or old_move_direction != Constants.Direction.down):
+		#if not up: return Constants.Direction.down
+	#if left and move_direction != Constants.Direction.left and move_direction != Constants.Direction.right and (old_move_direction == null or move_amount > MIN_MOVE_AMOUNT  or old_move_direction != Constants.Direction.left):
+		#if not right: return Constants.Direction.left
+	#if right and move_direction != Constants.Direction.right and move_direction != Constants.Direction.left and (old_move_direction == null or move_amount > MIN_MOVE_AMOUNT  or old_move_direction != Constants.Direction.right):
+		#if not left: return Constants.Direction.right
+	#
+	#return move_direction
 
 
 func directional_velocity(direction: Constants.Direction) -> Vector2:
@@ -44,7 +110,7 @@ func directional_velocity(direction: Constants.Direction) -> Vector2:
 		Constants.Direction.right:
 			return Vector2(SPEED, 0)
 		_:
-			printerr("Invalid direction")
+			printerr("Invalid direction in directional_velocity()")
 			get_tree().quit()
 			return Vector2(0, 0)
 
@@ -60,7 +126,7 @@ func directional_rotation(direction: Constants.Direction) -> float:
 		Constants.Direction.right:
 			return 90
 		_:
-			printerr("Invalid direction")
+			printerr("Invalid direction in directional_rotation()")
 			get_tree().quit()
 			return 0
 
@@ -105,7 +171,7 @@ func directional_position(direction: Constants.Direction) -> Vector2:
 			#cur_pos.y += (sprite.get_rect().size.y - sprite.get_rect().size.x)/ 2
 			cur_pos.x += middle
 		_:
-			printerr("Invalid direction")
+			printerr("Invalid direction in directional_position()")
 			get_tree().quit()
 	return cur_pos
 
@@ -191,9 +257,9 @@ func _physics_process(delta: float) -> void:
 		set_rotation_degrees(directional_rotation(new_direction))
 		set_position(directional_position(new_direction))
 		
-		print('old', old_move_direction, ' cur', move_direction, 'new', new_direction)
-		if old_move_direction != move_direction:
-			old_move_direction = move_direction
+		#print('old', old_move_direction, ' cur', move_direction, 'new', new_direction)
+		#if old_move_direction != move_direction:
+		old_move_direction = move_direction
 		move_direction = new_direction
 		move_amount = 0
 		#get_tree().paused = true
