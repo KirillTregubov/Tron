@@ -156,6 +156,7 @@ func spawn_trail(change: Vector2, fixing = false):
 	var newTrail = trail.instantiate() as Node2D
 	trails.add_child(newTrail)
 	newTrail.set_global_position(global_position - offset) # + padding
+	newTrail.set_color(Color(0, 1, 0))
 	if move_direction == Constants.Direction.left or move_direction == Constants.Direction.right:
 		newTrail.set_scale(scaleVec.orthogonal())
 		newTrail.set_rotation_degrees(90)
@@ -164,14 +165,23 @@ func spawn_trail(change: Vector2, fixing = false):
 	
 	if not fixed_trail and not fixing and old_move_direction != null:
 		var move = ((move_amount + 1) * change).abs().y if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else ((move_amount + 1) * change).abs().x
-		var amount = 2 if old_move_direction == Constants.Direction.up or old_move_direction == Constants.Direction.left else -2
+		var amount = 3 if old_move_direction == Constants.Direction.up or old_move_direction == Constants.Direction.left else -3
 		var shift = Vector2(amount, 0) if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else Vector2(0, amount)
-		var fixTrail = trail.instantiate() as Node2D
+		var fixTrail = trail.instantiate() as Trail
 		trails.add_child(fixTrail)
 		fixTrail.set_global_position(global_position - offset + shift)
+		fixTrail.z_index = 100
+		fixTrail.set_color(Color(1, 0, 0))
+		if move_direction == Constants.Direction.left or move_direction == Constants.Direction.right:
+			fixTrail.set_scale(Vector2(move / TRAIL_DIMENSION, 0.5))
+			#newTrail.set_rotation_degrees(90)
+		else:
+			fixTrail.set_scale(Vector2(0.5, move / TRAIL_DIMENSION))
 		
 		if move >= TRAIL_DIMENSION:
 			fixed_trail = true
+		
+		#get_tree().paused = true
 
 
 func crash() -> void:
@@ -211,8 +221,7 @@ func _physics_process(delta: float) -> void:
 		var middle = (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
 		if new_direction == Constants.Direction.left or new_direction == Constants.Direction.right:
 			if move_direction == Constants.Direction.up:
-				print(middle)
-				spawn_trail(Vector2(0, -middle), true) #
+				spawn_trail(Vector2(0, -middle), true)
 				#spawn_trail(Vector2(0, -8), Vector2(0, -6))
 			else:
 				spawn_trail(Vector2(0, middle), true)

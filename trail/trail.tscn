@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://cr8a8bbtq4rsk"]
+[gd_scene load_steps=5 format=3 uid="uid://cr8a8bbtq4rsk"]
+
+[ext_resource type="Script" path="res://trail/trail.gd" id="1_vctwl"]
 
 [sub_resource type="Gradient" id="Gradient_ugf0i"]
 offsets = PackedFloat32Array(0.525974)
-colors = PackedColorArray(1, 0, 0, 1)
+colors = PackedColorArray(1, 1, 1, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_3ac3h"]
 gradient = SubResource("Gradient_ugf0i")
@@ -14,6 +16,7 @@ fill_from = Vector2(1, 1)
 size = Vector2(4, 4)
 
 [node name="Trail" type="Node2D"]
+script = ExtResource("1_vctwl")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 collision_layer = 2
