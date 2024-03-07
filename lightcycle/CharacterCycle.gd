@@ -7,6 +7,7 @@ var move_state = State.idle
 var move_direction: Constants.Direction
 var old_move_direction
 var move_amount: int
+var fixed_trail: bool
 const TRAIL_DIMENSION = 4
 const SPEED = 250.0
 @onready var sprite = $Sprite2D as Sprite2D
@@ -131,7 +132,7 @@ func directional_position(direction: Constants.Direction) -> Vector2:
 	return cur_pos
 
 
-func spawn_trail(change: Vector2, padding = Vector2(0, 0)):
+func spawn_trail(change: Vector2, fixing = false):
 	# Calculate scale
 	var scaleVec: Vector2 = change.abs() / Vector2(TRAIL_DIMENSION, TRAIL_DIMENSION)
 	scaleVec.x = 1.0 if scaleVec.x == 0 else scaleVec.x
@@ -141,37 +142,49 @@ func spawn_trail(change: Vector2, padding = Vector2(0, 0)):
 	var offset: Vector2
 	match move_direction:
 		Constants.Direction.up:
-			offset = Vector2(0, TRAIL_DIMENSION)
+			offset = Vector2(0, -(sprite.get_rect().size.y / 2 - change.abs().y / 2))
 		Constants.Direction.down:
-			offset = Vector2(0, -TRAIL_DIMENSION)
+			offset = Vector2(0, sprite.get_rect().size.y / 2 - change.abs().y / 2)
 		Constants.Direction.left:
-			offset = Vector2(TRAIL_DIMENSION, 0)
+			offset = Vector2(-(sprite.get_rect().size.y / 2 - change.abs().x / 2), 0)
 		Constants.Direction.right:
-			offset = Vector2(-TRAIL_DIMENSION, 0)
+			offset = Vector2(sprite.get_rect().size.y / 2 - change.abs().x / 2, 0)
 		_:
 			offset = Vector2(0, 0)
 	
 	# Create trail
 	var newTrail = trail.instantiate() as Node2D
 	trails.add_child(newTrail)
-	newTrail.set_global_position(global_position - change + offset + padding)
+	newTrail.set_global_position(global_position - offset) # + padding
 	if move_direction == Constants.Direction.left or move_direction == Constants.Direction.right:
 		newTrail.set_scale(scaleVec.orthogonal())
 		newTrail.set_rotation_degrees(90)
 	else:
 		newTrail.set_scale(scaleVec)
+	
+	if not fixed_trail and not fixing and old_move_direction != null:
+		var move = ((move_amount + 1) * change).abs().y if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else ((move_amount + 1) * change).abs().x
+		var amount = 2 if old_move_direction == Constants.Direction.up or old_move_direction == Constants.Direction.left else -2
+		var shift = Vector2(amount, 0) if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else Vector2(0, amount)
+		var fixTrail = trail.instantiate() as Node2D
+		trails.add_child(fixTrail)
+		fixTrail.set_global_position(global_position - offset + shift)
+		
+		if move >= TRAIL_DIMENSION:
+			fixed_trail = true
 
 
 func crash() -> void:
 	print('crashed')
-	#get_tree().paused = true
-	get_parent().queue_free()
+	get_tree().paused = true
+	#get_parent().queue_free()
 
 
 func _ready() -> void:
 	move_direction = get_parent().START_DIRECTION
 	old_move_direction = null
 	move_amount = 0
+	fixed_trail = false
 	position.x = get_parent().START_POSITION_X
 	position.y = get_parent().START_POSITION_Y
 	set_rotation_degrees(directional_rotation(move_direction))
@@ -198,15 +211,16 @@ func _physics_process(delta: float) -> void:
 		var middle = (sprite.get_rect().size.y - sprite.get_rect().size.x) / 2
 		if new_direction == Constants.Direction.left or new_direction == Constants.Direction.right:
 			if move_direction == Constants.Direction.up:
-				spawn_trail(Vector2(0, -middle), Vector2(0, -middle / 2))
+				print(middle)
+				spawn_trail(Vector2(0, -middle), true) #
 				#spawn_trail(Vector2(0, -8), Vector2(0, -6))
 			else:
-				spawn_trail(Vector2(0, middle), Vector2(0, middle / 2))
+				spawn_trail(Vector2(0, middle), true)
 		else:
 			if move_direction == Constants.Direction.left:
-				spawn_trail(Vector2(-middle, 0), Vector2(-middle / 2, 0))
+				spawn_trail(Vector2(-middle, 0), true)
 			else:
-				spawn_trail(Vector2(middle, 0), Vector2(middle / 2, 0))
+				spawn_trail(Vector2(middle, 0), true)
 			
 		set_velocity(directional_velocity(new_direction))
 		set_rotation_degrees(directional_rotation(new_direction))
@@ -215,17 +229,29 @@ func _physics_process(delta: float) -> void:
 		old_move_direction = move_direction
 		move_direction = new_direction
 		move_amount = 0
+		fixed_trail = false
+		#get_tree().paused = true
 		return
 	
+	var move = (delta * velocity).round()
+	
 	# Add Trail
-	spawn_trail(delta * velocity)
+	spawn_trail(move)
 	
 	# Move and snap position
-	var collision = move_and_collide(delta * velocity)
+	var collision = move_and_collide(move)
 	move_amount += 1
 	if collision and collision.has_method('get_collider'):
 		print(collision.get_collider())
 		if (collision.get_collider()):
 			print('foreign')
 			crash()
+	
+	#if move_direction == Constants.Direction.up or move_direction == Constants.Direction.left:
+		#global_position = Vector2(ceil(global_position.x), ceil(global_position.y))
+	#else:
+		#global_position = Vector2(floor(global_position.x), floor(global_position.y))
 	global_position = Vector2(round(global_position.x), round(global_position.y))
+	
+	#if move_amount > 1:
+	#get_tree().paused = true

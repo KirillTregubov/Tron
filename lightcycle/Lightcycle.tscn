@@ -20,6 +20,7 @@ size = Vector2(8, 20)
 script = ExtResource("1_r0fxd")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+z_index = 1
 collision_mask = 3
 motion_mode = 1
 script = ExtResource("1_y3wxq")
