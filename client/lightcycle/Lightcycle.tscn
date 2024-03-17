@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cbw2m8i81pntg"]
 
-[ext_resource type="Script" path="res://lightcycle/Lightcycle.gd" id="1_r0fxd"]
-[ext_resource type="Script" path="res://lightcycle/CharacterCycle.gd" id="1_y3wxq"]
+[ext_resource type="Script" path="res://client/lightcycle/Lightcycle.gd" id="1_r0fxd"]
+[ext_resource type="Script" path="res://client/lightcycle/CharacterCycle.gd" id="1_y3wxq"]
 
 [sub_resource type="Gradient" id="Gradient_y6gx6"]
 offsets = PackedFloat32Array(0.525974, 1)

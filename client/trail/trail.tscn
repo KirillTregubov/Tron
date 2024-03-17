@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cr8a8bbtq4rsk"]
 
-[ext_resource type="Script" path="res://trail/trail.gd" id="1_vctwl"]
+[ext_resource type="Script" path="res://client/trail/trail.gd" id="1_7wh7c"]
 
 [sub_resource type="Gradient" id="Gradient_ugf0i"]
 offsets = PackedFloat32Array(0.525974)
@@ -16,7 +16,7 @@ fill_from = Vector2(1, 1)
 size = Vector2(4, 4)
 
 [node name="Trail" type="Node2D"]
-script = ExtResource("1_vctwl")
+script = ExtResource("1_7wh7c")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 collision_layer = 2

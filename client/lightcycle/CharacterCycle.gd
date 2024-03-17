@@ -7,26 +7,16 @@ var move_state = State.idle
 var move_direction: Constants.Direction
 var old_move_direction
 var move_amount: int
-var fixed_trail: bool
+var fixed_trail: int
 const TRAIL_DIMENSION = 4
-const SPEED = 250.0
+const SPEED = 250.0 #100.0
 @onready var sprite = $Sprite2D as Sprite2D
 @onready var trails = $"../Trails" as Node2D
-var trail = preload ("res://trail/trail.tscn")
+var trail = preload ("res://client/trail/trail.tscn")
 
 const MIN_MOVE_AMOUNT = 3
 const MAX_TICK_DURATION = 200 # 200ms
 var move_queue = []
-
-
-func _process(_delta):
-	var current_tick = Time.get_ticks_msec()
-
-	for i in range(move_queue.size() - 1, -1, -1):
-		if current_tick - move_queue[i].tick < MAX_TICK_DURATION:
-			return
-		else:
-			move_queue.remove_at(i)
 
 
 func _input(event: InputEvent) -> void:
@@ -156,15 +146,17 @@ func spawn_trail(change: Vector2, fixing = false):
 	var newTrail = trail.instantiate() as Node2D
 	trails.add_child(newTrail)
 	newTrail.set_global_position(global_position - offset) # + padding
-	newTrail.set_color(Color(0, 1, 0))
+	newTrail.set_color(Color(1, 0, 0)) #0, 1, 0
 	if move_direction == Constants.Direction.left or move_direction == Constants.Direction.right:
 		newTrail.set_scale(scaleVec.orthogonal())
 		newTrail.set_rotation_degrees(90)
 	else:
 		newTrail.set_scale(scaleVec)
 	
-	if not fixed_trail and not fixing and old_move_direction != null:
+	if fixed_trail < TRAIL_DIMENSION and not fixing and old_move_direction != null:
+		# TODO: fix wrong dimensions
 		var move = ((move_amount + 1) * change).abs().y if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else ((move_amount + 1) * change).abs().x
+		print(move)
 		var amount = 3 if old_move_direction == Constants.Direction.up or old_move_direction == Constants.Direction.left else -3
 		var shift = Vector2(amount, 0) if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else Vector2(0, amount)
 		var fixTrail = trail.instantiate() as Trail
@@ -179,7 +171,7 @@ func spawn_trail(change: Vector2, fixing = false):
 			fixTrail.set_scale(Vector2(0.5, move / TRAIL_DIMENSION))
 		
 		if move >= TRAIL_DIMENSION:
-			fixed_trail = true
+			fixed_trail = TRAIL_DIMENSION
 		
 		#get_tree().paused = true
 
@@ -194,12 +186,22 @@ func _ready() -> void:
 	move_direction = get_parent().START_DIRECTION
 	old_move_direction = null
 	move_amount = 0
-	fixed_trail = false
+	fixed_trail = 0
 	position.x = get_parent().START_POSITION_X
 	position.y = get_parent().START_POSITION_Y
 	set_rotation_degrees(directional_rotation(move_direction))
 	if move_state == State.moving:
 		set_velocity(directional_velocity(move_direction))
+
+
+func _process(_delta):
+	var current_tick = Time.get_ticks_msec()
+
+	for i in range(move_queue.size() - 1, -1, -1):
+		if current_tick - move_queue[i].tick < MAX_TICK_DURATION:
+			return
+		else:
+			move_queue.remove_at(i)
 
 
 func _physics_process(delta: float) -> void:
@@ -238,7 +240,7 @@ func _physics_process(delta: float) -> void:
 		old_move_direction = move_direction
 		move_direction = new_direction
 		move_amount = 0
-		fixed_trail = false
+		fixed_trail = 0
 		#get_tree().paused = true
 		return
 	
