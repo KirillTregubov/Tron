@@ -156,10 +156,11 @@ func spawn_trail(change: Vector2, fixing = false):
 	if fixed_trail < TRAIL_DIMENSION and not fixing and old_move_direction != null:
 		# TODO: fix wrong dimensions
 		var move = ((move_amount + 1) * change).abs().y if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else ((move_amount + 1) * change).abs().x
-		print(move)
+		#print(move)
 		var amount = 3 if old_move_direction == Constants.Direction.up or old_move_direction == Constants.Direction.left else -3
 		var shift = Vector2(amount, 0) if move_direction == Constants.Direction.up or move_direction == Constants.Direction.down else Vector2(0, amount)
 		var fixTrail = trail.instantiate() as Trail
+		fixTrail.set_is_corner(true)
 		trails.add_child(fixTrail)
 		fixTrail.set_global_position(global_position - offset + shift)
 		fixTrail.z_index = 100
@@ -179,6 +180,9 @@ func spawn_trail(change: Vector2, fixing = false):
 func crash() -> void:
 	print('crashed')
 	get_tree().paused = true
+	var last_trail = trails.get_child(trails.get_child_count() - 1) as Trail
+	if (last_trail.get_is_corner()):
+		trails.remove_child(last_trail)
 	#get_parent().queue_free()
 
 
@@ -246,6 +250,7 @@ func _physics_process(delta: float) -> void:
 	
 	var move = (delta * velocity).round()
 	
+	# TODO: consider refactor to do this after move
 	# Add Trail
 	spawn_trail(move)
 	
@@ -253,9 +258,9 @@ func _physics_process(delta: float) -> void:
 	var collision = move_and_collide(move)
 	move_amount += 1
 	if collision and collision.has_method('get_collider'):
-		print(collision.get_collider())
+		#print(collision.get_collider())
 		if (collision.get_collider()):
-			print('foreign')
+			#print('foreign')
 			crash()
 	
 	#if move_direction == Constants.Direction.up or move_direction == Constants.Direction.left:
