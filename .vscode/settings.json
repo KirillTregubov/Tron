@@ -1,3 +1,4 @@
 {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": false,
+    "godotTools.editorPath.godot4": "e:\\GameDev\\Godot\\Godot.exe"
 }

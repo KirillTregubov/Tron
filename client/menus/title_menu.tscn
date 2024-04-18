@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://dbro0hdms2bfe"]
+
+[ext_resource type="Theme" uid="uid://5ygat215e5hm" path="res://client/themes/menus.tres" id="1_s2m54"]
+[ext_resource type="Script" path="res://client/menus/title_menu.gd" id="1_vms1l"]
+
+[sub_resource type="Gradient" id="Gradient_2jydj"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_nvqgc"]
+gradient = SubResource("Gradient_2jydj")
+
+[node name="TitleMenu" type="Node2D"]
+script = ExtResource("1_vms1l")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer"]
+position = Vector2(165, 126)
+scale = Vector2(1.125, 203.5)
+texture = SubResource("GradientTexture1D_nvqgc")
+
+[node name="HostButton" type="Button" parent="CanvasLayer"]
+offset_left = 38.0
+offset_top = 40.0
+offset_right = 81.0
+offset_bottom = 71.0
+theme = ExtResource("1_s2m54")
+keep_pressed_outside = true
+text = "host"
+
+[node name="JoinButton" type="Button" parent="CanvasLayer"]
+offset_left = 38.0
+offset_top = 85.0
+offset_right = 81.0
+offset_bottom = 116.0
+theme = ExtResource("1_s2m54")
+keep_pressed_outside = true
+text = "join
+"
+
+[node name="StartButton" type="Button" parent="CanvasLayer"]
+offset_left = 39.0
+offset_top = 127.0
+offset_right = 84.0
+offset_bottom = 158.0
+text = "start"
+
+[connection signal="pressed" from="CanvasLayer/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/JoinButton" to="." method="_on_join_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/StartButton" to="." method="_on_start_button_pressed"]
