@@ -12,14 +12,14 @@ gradient = SubResource("Gradient_2jydj")
 [node name="TitleMenu" type="Node2D"]
 script = ExtResource("1_vms1l")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="Menu" type="CanvasLayer" parent="."]
 
-[node name="Sprite2D" type="Sprite2D" parent="CanvasLayer"]
+[node name="Sprite2D" type="Sprite2D" parent="Menu"]
 position = Vector2(165, 126)
 scale = Vector2(1.125, 203.5)
 texture = SubResource("GradientTexture1D_nvqgc")
 
-[node name="HostButton" type="Button" parent="CanvasLayer"]
+[node name="HostButton" type="Button" parent="Menu"]
 offset_left = 38.0
 offset_top = 40.0
 offset_right = 81.0
@@ -28,7 +28,7 @@ theme = ExtResource("1_s2m54")
 keep_pressed_outside = true
 text = "host"
 
-[node name="JoinButton" type="Button" parent="CanvasLayer"]
+[node name="JoinButton" type="Button" parent="Menu"]
 offset_left = 38.0
 offset_top = 85.0
 offset_right = 81.0
@@ -38,13 +38,13 @@ keep_pressed_outside = true
 text = "join
 "
 
-[node name="StartButton" type="Button" parent="CanvasLayer"]
+[node name="StartButton" type="Button" parent="Menu"]
 offset_left = 39.0
 offset_top = 127.0
 offset_right = 84.0
 offset_bottom = 158.0
 text = "start"
 
-[connection signal="pressed" from="CanvasLayer/HostButton" to="." method="_on_host_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/JoinButton" to="." method="_on_join_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Menu/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="Menu/JoinButton" to="." method="_on_join_button_pressed"]
+[connection signal="pressed" from="Menu/StartButton" to="." method="_on_start_button_pressed"]

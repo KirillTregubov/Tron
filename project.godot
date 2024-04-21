@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="Tron"
-run/main_scene="res://client/menus/title_menu.tscn"
+run/main_scene="res://client/main/main.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Autoload="*res://client/Autoload.gd"
-Lobby="*res://client/multiplayer/lobby.tscn"
+Lobby="res://client/multiplayer/lobby.tscn"
 
 [display]
 

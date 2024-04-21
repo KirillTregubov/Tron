@@ -1,12 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://metadudas83s"]
+[gd_scene load_steps=3 format=3 uid="uid://metadudas83s"]
 
 [ext_resource type="Script" path="res://client/main/main.gd" id="1_cna1n"]
-[ext_resource type="PackedScene" uid="uid://3e47u0kbwfwv" path="res://client/grid/grid.tscn" id="2_6x5mb"]
-[ext_resource type="PackedScene" uid="uid://cbw2m8i81pntg" path="res://client/lightcycle/Lightcycle.tscn" id="3_wslmn"]
+[ext_resource type="PackedScene" uid="uid://dbro0hdms2bfe" path="res://client/menus/title_menu.tscn" id="3_mi34o"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_cna1n")
 
-[node name="Grid" parent="." instance=ExtResource("2_6x5mb")]
-
-[node name="Lightcycle" parent="." instance=ExtResource("3_wslmn")]
+[node name="TitleMenu" parent="." instance=ExtResource("3_mi34o")]

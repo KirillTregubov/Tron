@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://d0tah55qs8onh"]
+
+[ext_resource type="Script" path="res://client/levels/base_level.gd" id="1_nk83b"]
+[ext_resource type="PackedScene" uid="uid://3e47u0kbwfwv" path="res://client/grid/grid.tscn" id="1_ppbn4"]
+
+[node name="BaseLevel" type="Node2D"]
+script = ExtResource("1_nk83b")
+
+[node name="Grid" parent="." instance=ExtResource("1_ppbn4")]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://client/lightcycle/Lightcycle.tscn")
+spawn_path = NodePath("../Players")
+
+[node name="Players" type="Node2D" parent="."]
